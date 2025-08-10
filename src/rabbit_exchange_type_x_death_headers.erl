@@ -103,13 +103,13 @@ description() ->
   mergeDeathWithHeaders(Headers, Deaths) ->
     maps:merge(Headers, buildDeathHeaders(Deaths)).
 
-  buildDeathHeaders({deaths, First, Last, Records}) ->
+  buildDeathHeaders({deaths, _, _, Records}) ->
     maps:fold(fun(Key, Value, Acc) ->
         Headers = extractDeathHeaders({Key, Value}),
         maps:merge(Acc, Headers)
     end, #{}, Records).
 
-  extractDeathHeaders({{QueueName, Reason}, {death, Exchange, RoutingKeys, Count, Anns}}) ->
+  extractDeathHeaders({{QueueName, Reason}, {death, Exchange, RoutingKeys, Count, _}}) ->
     ReasonBin = atom_to_binary(Reason, utf8),
     Prefix = <<"x-death[", QueueName/binary, "][", ReasonBin/binary, "]">>,
     Headers0 = #{},
