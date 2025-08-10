@@ -83,6 +83,7 @@ testing_message_rejected(Config) ->
   [DTag] = consume(Chan, QueueName, [Payload]),
   amqp_channel:cast(Chan, #'basic.reject'{delivery_tag = DTag, requeue = false}),
   wait_for_messages(Config, [[QueueName, <<"0">>, <<"0">>, <<"0">>]]),
+  wait_for_messages(Config, [[FinalDeadLetterQueue, <<"1">>, <<"1">>, <<"0">>]]),
 
   cleanup_resources(Chan, [DLXExchange], [QueueName, FinalDeadLetterQueue]),
   passed.
