@@ -108,7 +108,7 @@ description() ->
         maps:merge(Acc, extractDeathHeaders(DeathRecord))
     end, #{}, Deaths).
 
-  extractDeathHeaders({{QueueName, Reason}, {death, Exchange, RoutingKeys, Count, Anns}}) ->
+  extractDeathHeaders({{QueueName, Reason}, {death, Exchange, RoutingKeys, Count, _}}) ->
     ReasonBin = atom_to_binary(Reason, utf8),
     Prefix = <<"x-death[", QueueName/binary, "][", ReasonBin/binary, "]">>,
     Headers0 = #{},
