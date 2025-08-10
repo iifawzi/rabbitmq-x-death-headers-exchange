@@ -122,7 +122,7 @@ rabbitmqadmin publish exchange="" routing_key=queue1 payload="test message"
 4. Message routes to `queue2` (matches the first binding)
 5. After a second message expired from `queue2` 
 6. Now the exchange has the message with headers: `x-death[queue1][rejected]-count = 1` AND `x-death[queue2][expired]-count = 1`
-7. Message routed to `alarming_queue` (matches the second binding requiring both conditions)
+7. Message routed to `alarming_queue` (matches the second binding requiring both conditions), besides also being routed to queue2. 
 
 ## Matching Modes
 
