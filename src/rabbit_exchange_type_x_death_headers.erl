@@ -103,87 +103,35 @@ description() ->
   mergeDeathWithHeaders(Headers, Deaths) ->
     maps:merge(Headers, buildDeathHeaders(Deaths)).
 
-  buildDeathHeaders(Deaths) when is_list(Deaths) ->
+  buildDeathHeaders(Deaths) ->
     lists:foldl(fun(DeathRecord, Acc) ->
-                    maps:merge(Acc, extractDeathHeaders(DeathRecord))
-                end, #{}, Deaths);
-  buildDeathHeaders({deaths, _First, _Last, Records}) when is_list(Records) ->
-    buildDeathHeaders(Records);
-  buildDeathHeaders(_) ->
-    #{}.
+        maps:merge(Acc, extractDeathHeaders(DeathRecord))
+    end, #{}, Deaths).
 
-  extractDeathHeaders(DeathRecord) when is_map(DeathRecord) ->
-    extractDeathHeadersFromMap(DeathRecord);
-  extractDeathHeaders({death, Props}) when is_list(Props) ->
-    extractDeathHeadersFromProps(Props);
-  extractDeathHeaders(_) ->
-    #{}.
+extractDeathHeaders({{QueueName, Reason}, {death, Exchange, RoutingKeys, Count, Anns}}) ->
+    ReasonBin = atom_to_binary(Reason, utf8),
+    Prefix = <<"x-death[", QueueName/binary, "][", ReasonBin/binary, "]">>,
+    Headers0 = #{},
+    Headers1 = case Exchange of
+                    undefined -> Headers0;
+                    Exchange -> maps:put(<<Prefix/binary, "-exchange">>, Exchange, Headers0)
+                end,
 
-  extractDeathHeadersFromMap(DeathMap) ->
-    Headers = #{},
-    case maps:get(queue, DeathMap, undefined) of
-        undefined -> ok;
-        Queue -> maps:put(<<"x-death-queue">>, Queue, Headers)
-    end,
-    case maps:get(reason, DeathMap, undefined) of
-        undefined -> ok;
-        Reason when is_atom(Reason) -> maps:put(<<"x-death-reason">>, atom_to_binary(Reason, utf8), Headers);
-        Reason -> maps:put(<<"x-death-reason">>, Reason, Headers)
-    end,
-    case maps:get(count, DeathMap, undefined) of
-        undefined -> ok;
-        Count -> maps:put(<<"x-death-count">>, Count, Headers)
-    end,
-    case maps:get(exchange, DeathMap, undefined) of
-                   undefined -> ok;
-                   Exchange -> maps:put(<<"x-death-exchange">>, Exchange, Headers)
-               end,
-    case maps:get(routing_keys, DeathMap, undefined) of
-        undefined -> ok;
-        RoutingKeys when is_list(RoutingKeys) ->
+    Headers2 = case Count of
+                    undefined -> Headers1;
+                    Count -> maps:put(<<Prefix/binary, "-count">>, Count, Headers1)
+                end,
+    case RoutingKeys of
+        undefined -> Headers2;
+        RoutingKeys ->
             JoinedKeys = lists:foldl(fun(RK, Acc) ->
-                                        case Acc of
-                                            <<>> -> RK;
-                                            _ -> <<Acc/binary, ",", RK/binary>>
-                                        end
-                                    end, <<>>, RoutingKeys),
-            maps:put(<<"x-death-routing-keys">>, JoinedKeys, Headers);
-        RoutingKey ->
-            maps:put(<<"x-death-routing-keys">>, RoutingKey, Headers)
-    end,
-
-  extractDeathHeadersFromProps(Props) ->
-    Headers = #{},
-    case proplists:get_value(queue, Props) of
-        undefined -> ok;
-        Queue -> maps:put(<<"x-death-queue">>, Queue, Headers)
-    end,
-    case proplists:get_value(reason, Props) of
-        undefined -> ok;
-        Reason when is_atom(Reason) -> maps:put(<<"x-death-reason">>, atom_to_binary(Reason, utf8), Headers);
-        Reason -> maps:put(<<"x-death-reason">>, Reason, Headers)
-    end,
-    case proplists:get_value(count, Props) of
-        undefined -> ok;
-        Count -> maps:put(<<"x-death-count">>, Count, Headers)
-    end,
-    case proplists:get_value(exchange, Props) of
-        undefined -> ok;
-        Exchange -> maps:put(<<"x-death-exchange">>, Exchange, Headers)
-    end,
-    case proplists:get_value('routing-keys', Props) of
-        undefined -> ok;
-        RoutingKeys when is_list(RoutingKeys) ->
-            JoinedKeys = lists:foldl(fun(RK, Acc) ->
-                                        case Acc of
-                                            <<>> -> RK;
-                                            _ -> <<Acc/binary, ",", RK/binary>>
-                                        end
-                                    end, <<>>, RoutingKeys),
-            maps:put(<<"x-death-routing-keys">>, JoinedKeys, Headers);
-        RoutingKey ->
-            maps:put(<<"x-death-routing-keys">>, RoutingKey, Headers)
-    end,
+                case Acc of
+                    <<>> -> RK;
+                    _ -> <<Acc, ",", RK>>
+                end
+            end, <<>>, RoutingKeys),
+            maps:put(<<Prefix/binary, "-routing-keys">>, JoinedKeys, Headers2)
+    end.
   
   validate(_X) -> ok.
   create(_Serial, _X) -> ok.
