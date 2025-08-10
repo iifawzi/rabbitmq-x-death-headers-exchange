@@ -6,10 +6,12 @@ The X-Death Headers Exchange is a custom RabbitMQ exchange type that extends the
 
 ## Problem Solved
 
-In standard RabbitMQ, when a message is dead-lettered (rejected, expired, or queue exceeded), it accumulates `x-death` headers containing information about why and where it "died". However, the standard headers exchange doesn't allow routing based on them. This exchange type removes that limitation. Making it possible to have bindings on x-death information when using `all-with-x` and `any-with-x` matchings. 
+In standard RabbitMQ, when a message is dead-lettered (rejected, expired, or queue exceeded), it accumulates `x-death` headers containing information about why and where it "died". However, the standard headers exchange doesn't allow routing based on them. 
+
+This exchange type removes that limitation. Making it possible to have bindings on x-death information when using `all-with-x` and `any-with-x` matchings. 
 
 
-if you're looking for more advanced routing capabilities for more sophisticated DLQ topologies, you might be looking for [RADLX](https://github.com/iifawzi/rabbitmq-retry-aware-dlx) (RabbitMQ exchange that enables atomic, per-message death decisions with retries) 
+If you're looking for more advanced routing capabilities for more sophisticated DLQ topologies, you might be looking for [RADLX](https://github.com/iifawzi/rabbitmq-retry-aware-dlx) (RabbitMQ exchange that enables atomic, per-message death decisions with retries) 
 
 ## Installation
 
