@@ -1,5 +1,8 @@
 # RabbitMQ X-Death Headers Exchange
 
+<img width="1359" height="781" alt="Screenshot 2025-08-10 at 23 48 40" src="https://github.com/user-attachments/assets/9370c17e-0a34-4fdb-bc81-f50df22ac865" />
+
+
 ## Overview
 
 The X-Death Headers Exchange is a custom RabbitMQ exchange type that extends the standard headers exchange functionality by enabling routing decisions based on the `x-death` headers. This solves a limitation in RabbitMQ where the standard headers exchange cannot route messages based on death information.
