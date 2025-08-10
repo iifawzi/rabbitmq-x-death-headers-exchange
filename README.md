@@ -134,4 +134,4 @@ For x-death routing capabilities that this exchange provides, you'll need to use
 
 ## License
 
-See LICENSE file for details.
+This project is licensed under the Mozilla Public License 2.0 - see the LICENSE file for details.
