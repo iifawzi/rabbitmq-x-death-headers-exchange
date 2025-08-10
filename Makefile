@@ -1,11 +1,11 @@
 PROJECT = rabbitmq_x_death_headers_exchange
 PROJECT_DESCRIPTION = RabbitMQ exchange that behaves like the standard Headers exchange, but with the added capability to route messages based on the x-death header.
 
-RABBITMQ_VERSION = v4.1.3
+RABBITMQ_VERSION = v3.13.7
 current_rmq_ref = $(RABBITMQ_VERSION)
 
 define PROJECT_APP_EXTRA_KEYS
-	{broker_version_requirements, ["4.0.4", "4.1.0"]}
+	{broker_version_requirements, ["3.13.3"]}
 endef
 
 dep_amqp_client                = git_rmq-subfolder rabbitmq-erlang-client $(RABBITMQ_VERSION)
