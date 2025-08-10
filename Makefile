@@ -1,7 +1,7 @@
 PROJECT = rabbitmq_x_death_headers_exchange
 PROJECT_DESCRIPTION = RabbitMQ exchange that behaves like the standard Headers exchange, but with the added capability to route messages based on the x-death header.
 
-RABBITMQ_VERSION = v4.1.2
+RABBITMQ_VERSION = v4.1.3
 current_rmq_ref = $(RABBITMQ_VERSION)
 
 define PROJECT_APP_EXTRA_KEYS
