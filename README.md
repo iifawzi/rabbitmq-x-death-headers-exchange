@@ -1,6 +1,6 @@
 # RabbitMQ X-Death Headers Exchange
 
-<img width="1359" height="781" alt="Screenshot 2025-08-10 at 23 48 40" src="https://github.com/user-attachments/assets/9370c17e-0a34-4fdb-bc81-f50df22ac865" />
+<img width="1347" height="747" alt="Screenshot 2025-08-11 at 00 40 09" src="https://github.com/user-attachments/assets/a0850e17-f1ef-4e9b-94de-a59631ebf539" />
 
 
 ## Overview
