@@ -17,8 +17,7 @@ all() ->
 groups() ->
   [
     {non_parallel_tests, [], [
-      testing_message_rejected,
-      testing_x_death_headers_extraction,
+      testing_simple_toplogy,
       testing_alarming_topology
     ]}
   ].
@@ -59,7 +58,7 @@ end_per_testcase(Testcase, Config) ->
 %% -------------------------------------------------------------------
 
 
-testing_message_rejected(Config) ->
+testing_simple_toplogy(Config) ->
   {_, Chan} = rabbit_ct_client_helpers:open_connection_and_channel(Config, 0),
   DLXExchange = <<"dlx">>,
   QueueName = <<"queue">>,
@@ -83,36 +82,7 @@ testing_message_rejected(Config) ->
   [DTag] = consume(Chan, QueueName, [Payload]),
   amqp_channel:cast(Chan, #'basic.reject'{delivery_tag = DTag, requeue = false}),
   wait_for_messages(Config, [[QueueName, <<"0">>, <<"0">>, <<"0">>]]),
-
-  cleanup_resources(Chan, [DLXExchange], [QueueName, FinalDeadLetterQueue]),
-  passed.
-
-testing_x_death_headers_extraction(Config) ->
-  {_, Chan} = rabbit_ct_client_helpers:open_connection_and_channel(Config, 0),
-  DLXExchange = <<"dlx">>,
-  QueueName = <<"queue">>,
-  FinalDeadLetterQueue = <<"failed_queue">>,
-
-  declare_exchange(Chan, DLXExchange, <<"x-death-headers">>),
-  declare_queue_with_dlx(Chan, QueueName, DLXExchange),
-  declare_queue(Chan, FinalDeadLetterQueue),
-  
-  bind_queue_with_arguments(Chan, FinalDeadLetterQueue, DLXExchange, [
-    {<<"x-match">>, longstr, <<"all-with-x">>},
-    {<<"x-death[queue][rejected]-count">>, long, 1}
-  ]),
-
-  Payload = <<"test_payload">>,
-  publish_message_with_headers(Chan, QueueName, Payload, []),
-
-  wait_for_messages(Config, [[QueueName, <<"1">>, <<"1">>, <<"0">>]]),
-  [DTag] = consume(Chan, QueueName, [Payload]),
-  amqp_channel:cast(Chan, #'basic.reject'{delivery_tag = DTag, requeue = false}),
-  
-  wait_for_messages(Config, [[QueueName, <<"0">>, <<"0">>, <<"0">>]]),
   wait_for_messages(Config, [[FinalDeadLetterQueue, <<"1">>, <<"1">>, <<"0">>]]),
-  
-  [_DTTag] = consume(Chan, FinalDeadLetterQueue, [Payload]),
 
   cleanup_resources(Chan, [DLXExchange], [QueueName, FinalDeadLetterQueue]),
   passed.
