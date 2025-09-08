@@ -22,7 +22,7 @@ If you're looking for more advanced routing capabilities for more sophisticated 
 2. Place the `.ez` file in your RabbitMQ plugins directory
 3. Enable the plugin:
 ```bash
-rabbitmq-plugins enable rabbitmq_retry_aware_dlx
+rabbitmq-plugins enable rabbitmq_x_death_headers_exchange
 ```
 
 ### Version Compatibility
